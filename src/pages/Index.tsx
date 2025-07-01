@@ -1,11 +1,163 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import SurveyBuilder from '../components/SurveyBuilder';
+import Dashboard from '../components/Dashboard';
+import SurveyList from '../components/SurveyList';
+import Login from '../components/Login';
+import { Users, BarChart3, FileText, Settings, LogOut } from 'lucide-react';
+
+// Mock user context
+interface User {
+  id: string;
+  name: string;
+  role: 'admin' | 'hr_manager' | 'employee';
+  email: string;
+}
 
 const Index = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [currentView, setCurrentView] = useState('dashboard');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check for stored user session
+    const storedUser = localStorage.getItem('hrSurveyUser');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogin = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem('hrSurveyUser', JSON.stringify(userData));
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('hrSurveyUser');
+    setCurrentView('dashboard');
+  };
+
+  if (!user) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  const hasPermission = (requiredRole: string) => {
+    const roleHierarchy = { admin: 3, hr_manager: 2, employee: 1 };
+    const userLevel = roleHierarchy[user.role];
+    const requiredLevel = roleHierarchy[requiredRole as keyof typeof roleHierarchy];
+    return userLevel >= requiredLevel;
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <h1 className="text-2xl font-bold text-blue-600">HR Survey Platform</h1>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-700">
+                Welcome, <span className="font-medium">{user.name}</span>
+              </span>
+              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full capitalize">
+                {user.role.replace('_', ' ')}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="flex items-center text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex">
+        {/* Sidebar */}
+        <nav className="w-64 bg-white shadow-sm min-h-screen">
+          <div className="p-4">
+            <ul className="space-y-2">
+              <li>
+                <button
+                  onClick={() => setCurrentView('dashboard')}
+                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    currentView === 'dashboard'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <BarChart3 className="w-5 h-5 mr-3" />
+                  Dashboard
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setCurrentView('surveys')}
+                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    currentView === 'surveys'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <FileText className="w-5 h-5 mr-3" />
+                  Surveys
+                </button>
+              </li>
+              {hasPermission('hr_manager') && (
+                <li>
+                  <button
+                    onClick={() => setCurrentView('builder')}
+                    className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      currentView === 'builder'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Settings className="w-5 h-5 mr-3" />
+                    Survey Builder
+                  </button>
+                </li>
+              )}
+              {hasPermission('admin') && (
+                <li>
+                  <button
+                    onClick={() => setCurrentView('users')}
+                    className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      currentView === 'users'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Users className="w-5 h-5 mr-3" />
+                    User Management
+                  </button>
+                </li>
+              )}
+            </ul>
+          </div>
+        </nav>
+
+        {/* Main Content */}
+        <main className="flex-1 p-6">
+          {currentView === 'dashboard' && <Dashboard user={user} />}
+          {currentView === 'surveys' && <SurveyList user={user} />}
+          {currentView === 'builder' && hasPermission('hr_manager') && <SurveyBuilder user={user} />}
+          {currentView === 'users' && hasPermission('admin') && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">User Management</h2>
+              <div className="bg-white rounded-lg shadow p-6">
+                <p className="text-gray-600">User management functionality would be implemented here.</p>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
