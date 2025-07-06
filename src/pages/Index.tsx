@@ -77,7 +77,7 @@ const Index = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <h1 className="text-2xl font-bold text-blue-600">Plateforme de Sondages RH</h1>
+                <h1 className="text-2xl font-bold text-blue-600">AGIRH</h1>
               </div>
             </div>
             <div className="flex items-center space-x-4">

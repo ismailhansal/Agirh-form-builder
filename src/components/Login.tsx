@@ -24,9 +24,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   // Demo accounts
   const demoAccounts = [
-    { email: 'admin@company.com', password: 'admin123', name: 'Administrateur', role: 'admin' as const },
-    { email: 'hr@company.com', password: 'hr123', name: 'Responsable RH', role: 'hr_manager' as const },
-    { email: 'employee@company.com', password: 'emp123', name: 'Employé', role: 'employee' as const }
+    { email: 'admin@agirh.com', password: 'admin123', name: 'Administrateur', role: 'admin' as const },
+    { email: 'hr@agirh.com', password: 'hr123', name: 'Responsable RH', role: 'hr_manager' as const },
+    { email: 'employee@agirh.com', password: 'emp123', name: 'Employé', role: 'employee' as const }
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -79,7 +79,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Plateforme de Sondages RH</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Plateforme de Sondages AGIRH</h1>
             <p className="text-gray-600 mt-2">
               {isLogin ? 'Connectez-vous à votre compte' : 'Créez votre compte'}
             </p>
