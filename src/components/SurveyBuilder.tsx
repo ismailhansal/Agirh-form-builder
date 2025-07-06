@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { Plus, GripVertical, Trash2, Eye, Save, Type, List, Star, CheckSquare, Calendar, Hash, ArrowLeft } from 'lucide-react';
+import { Plus, GripVertical, Trash2, Eye, Save, Type, List, Star, CheckSquare, Calendar, Hash, ArrowLeft, FileText } from 'lucide-react';
+import SurveyTemplates from './SurveyTemplates';
 
 interface QuestionType {
   id: string;
@@ -36,6 +37,7 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
   });
 
   const [showPreview, setShowPreview] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const dragCounter = useRef(0);
 
   // Load existing survey if editing
@@ -57,6 +59,22 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
     { type: 'date', icon: Calendar, label: 'Date', description: 'Date picker' },
     { type: 'number', icon: Hash, label: 'Number', description: 'Numeric input' },
   ];
+
+  const handleSelectTemplate = (template: any) => {
+    const questionsWithIds = template.questions.map((q: any) => ({
+      ...q,
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9)
+    }));
+
+    setSurvey(prev => ({
+      ...prev,
+      title: template.name,
+      description: template.description,
+      questions: questionsWithIds
+    }));
+
+    setShowTemplates(false);
+  };
 
   const addQuestion = (type: string) => {
     const newQuestion: QuestionType = {
@@ -143,6 +161,13 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
           </div>
         </div>
         <div className="flex space-x-3">
+          <button
+            onClick={() => setShowTemplates(true)}
+            className="flex items-center px-4 py-2 text-purple-700 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            Use Template
+          </button>
           <button
             onClick={() => setShowPreview(!showPreview)}
             className="flex items-center px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -257,13 +282,31 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
                 {survey.questions.length === 0 && (
                   <div className="text-center py-12 text-gray-500">
                     <Plus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                    <p>No questions yet. Add questions from the panel on the left.</p>
+                    <p className="mb-2">No questions yet. Get started by:</p>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setShowTemplates(true)}
+                        className="block mx-auto text-purple-600 hover:text-purple-700 font-medium"
+                      >
+                        Using a template
+                      </button>
+                      <p className="text-gray-400">or</p>
+                      <p>Adding questions from the panel on the left</p>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Survey Templates Modal */}
+      {showTemplates && (
+        <SurveyTemplates
+          onSelectTemplate={handleSelectTemplate}
+          onClose={() => setShowTemplates(false)}
+        />
       )}
     </div>
   );
