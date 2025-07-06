@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Eye, Edit, Trash2, Plus, Calendar, Users, Share2, Download, Filter, Search, FileText } from 'lucide-react';
 
@@ -74,7 +73,7 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
     const newSurvey = {
       ...survey,
       id: Date.now().toString(),
-      title: `${survey.title} (Copy)`,
+      title: `${survey.title} (Copie)`,
       createdAt: new Date().toISOString(),
       status: 'draft' as const
     };
@@ -105,6 +104,15 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'published': return 'publié';
+      case 'draft': return 'brouillon';
+      case 'closed': return 'fermé';
+      default: return status;
+    }
+  };
+
   const hasPermission = (action: string) => {
     if (user.role === 'admin') return true;
     if (user.role === 'hr_manager' && ['create', 'edit', 'delete'].includes(action)) return true;
@@ -115,8 +123,8 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Surveys</h1>
-          <p className="text-gray-600 mt-1">Manage and monitor your HR surveys</p>
+          <h1 className="text-3xl font-bold text-gray-900">Sondages</h1>
+          <p className="text-gray-600 mt-1">Gérez et surveillez vos sondages RH</p>
         </div>
         {hasPermission('create') && (
           <button
@@ -124,7 +132,7 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
             className="flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create Survey
+            Créer un sondage
           </button>
         )}
       </div>
@@ -137,7 +145,7 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
               <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search surveys..."
+                placeholder="Rechercher des sondages..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -148,20 +156,20 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
               onChange={(e) => setStatusFilter(e.target.value as any)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">All Status</option>
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="closed">Closed</option>
+              <option value="all">Tous les statuts</option>
+              <option value="draft">Brouillon</option>
+              <option value="published">Publié</option>
+              <option value="closed">Fermé</option>
             </select>
           </div>
           <div className="flex items-center space-x-2">
             <button className="flex items-center px-3 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
               <Filter className="w-4 h-4 mr-2" />
-              Filter
+              Filtrer
             </button>
             <button className="flex items-center px-3 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
               <Download className="w-4 h-4 mr-2" />
-              Export
+              Exporter
             </button>
           </div>
         </div>
@@ -178,15 +186,15 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
                   <p className="text-sm text-gray-600 line-clamp-2">{survey.description}</p>
                 </div>
                 <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(survey.status)}`}>
-                  {survey.status}
+                  {getStatusText(survey.status)}
                 </span>
               </div>
 
               <div className="flex items-center text-sm text-gray-500 mb-4">
                 <Calendar className="w-4 h-4 mr-1" />
-                {new Date(survey.createdAt).toLocaleDateString()}
+                {new Date(survey.createdAt).toLocaleDateString('fr-FR')}
                 <Users className="w-4 h-4 ml-4 mr-1" />
-                {survey.responses || 0} responses
+                {survey.responses || 0} réponses
               </div>
 
               <div className="flex items-center justify-between">
@@ -228,7 +236,7 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
                 <div className="flex space-x-2">
                   {survey.status === 'published' && (
                     <button className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      View Results
+                      Voir résultats
                     </button>
                   )}
                   {hasPermission('edit') && (
@@ -236,7 +244,7 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
                       onClick={() => duplicateSurvey(survey)}
                       className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded hover:bg-gray-200"
                     >
-                      Duplicate
+                      Dupliquer
                     </button>
                   )}
                 </div>
@@ -249,11 +257,11 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
       {filteredSurveys.length === 0 && (
         <div className="text-center py-12">
           <FileText className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No surveys found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun sondage trouvé</h3>
           <p className="text-gray-600 mb-4">
             {searchTerm || statusFilter !== 'all' 
-              ? 'Try adjusting your search or filter criteria'
-              : 'Get started by creating your first survey'
+              ? 'Essayez d\'ajuster vos critères de recherche ou de filtre'
+              : 'Commencez par créer votre premier sondage'
             }
           </p>
           {hasPermission('create') && !searchTerm && statusFilter === 'all' && (
@@ -262,7 +270,7 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
               className="inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create Survey
+              Créer un sondage
             </button>
           )}
         </div>
@@ -272,9 +280,9 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Survey</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Supprimer le sondage</h3>
             <p className="text-gray-600 mb-4">
-              Are you sure you want to delete this survey? This action cannot be undone.
+              Êtes-vous sûr de vouloir supprimer ce sondage ? Cette action ne peut pas être annulée.
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -284,13 +292,13 @@ const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
                 }}
                 className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
-                Cancel
+                Annuler
               </button>
               <button
                 onClick={() => surveyToDelete && deleteSurvey(surveyToDelete)}
                 className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
               >
-                Delete
+                Supprimer
               </button>
             </div>
           </div>

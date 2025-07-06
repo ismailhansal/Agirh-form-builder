@@ -27,185 +27,185 @@ interface SurveyTemplatesProps {
 const surveyTemplates: SurveyTemplate[] = [
   {
     id: 'employee-satisfaction',
-    name: 'Employee Satisfaction Survey',
-    description: 'Measure overall employee satisfaction and engagement',
+    name: 'Sondage de satisfaction des employés',
+    description: 'Mesurez la satisfaction et l\'engagement global des employés',
     icon: Users,
-    category: 'HR',
+    category: 'RH',
     questions: [
       {
         type: 'rating',
-        title: 'How satisfied are you with your current role?',
+        title: 'À quel point êtes-vous satisfait de votre poste actuel ?',
         required: true
       },
       {
         type: 'rating',
-        title: 'How would you rate your work-life balance?',
+        title: 'Comment évalueriez-vous votre équilibre vie professionnelle-vie privée ?',
         required: true
       },
       {
         type: 'multiple_choice',
-        title: 'What motivates you most at work?',
+        title: 'Qu\'est-ce qui vous motive le plus au travail ?',
         required: true,
-        options: ['Career growth', 'Recognition', 'Compensation', 'Work environment', 'Team collaboration']
+        options: ['Évolution de carrière', 'Reconnaissance', 'Rémunération', 'Environnement de travail', 'Collaboration d\'équipe']
       },
       {
         type: 'text',
-        title: 'What improvements would you suggest for the workplace?',
+        title: 'Quelles améliorations suggéreriez-vous pour le lieu de travail ?',
         required: false
       }
     ]
   },
   {
     id: 'performance-review',
-    name: 'Performance Review Survey',
-    description: 'Comprehensive performance evaluation template',
+    name: 'Sondage d\'évaluation de performance',
+    description: 'Modèle d\'évaluation de performance complet',
     icon: Star,
-    category: 'HR',
+    category: 'RH',
     questions: [
       {
         type: 'rating',
-        title: 'Rate your overall performance this quarter',
+        title: 'Évaluez votre performance globale ce trimestre',
         required: true
       },
       {
         type: 'checkbox',
-        title: 'Which goals did you achieve this quarter?',
+        title: 'Quels objectifs avez-vous atteints ce trimestre ?',
         required: true,
-        options: ['Goal 1', 'Goal 2', 'Goal 3', 'Goal 4']
+        options: ['Objectif 1', 'Objectif 2', 'Objectif 3', 'Objectif 4']
       },
       {
         type: 'text',
-        title: 'What were your main accomplishments?',
+        title: 'Quelles ont été vos principales réalisations ?',
         required: true
       },
       {
         type: 'text',
-        title: 'What areas would you like to improve?',
+        title: 'Dans quels domaines aimeriez-vous vous améliorer ?',
         required: true
       },
       {
         type: 'rating',
-        title: 'How would you rate your collaboration with team members?',
+        title: 'Comment évalueriez-vous votre collaboration avec les membres de l\'équipe ?',
         required: true
       }
     ]
   },
   {
     id: 'onboarding-feedback',
-    name: 'New Employee Onboarding',
-    description: 'Gather feedback on the onboarding experience',
+    name: 'Intégration des nouveaux employés',
+    description: 'Recueillez des commentaires sur l\'expérience d\'intégration',
     icon: GraduationCap,
-    category: 'HR',
+    category: 'RH',
     questions: [
       {
         type: 'rating',
-        title: 'How would you rate your overall onboarding experience?',
+        title: 'Comment évalueriez-vous votre expérience d\'intégration globale ?',
         required: true
       },
       {
         type: 'multiple_choice',
-        title: 'Which part of onboarding was most helpful?',
+        title: 'Quelle partie de l\'intégration a été la plus utile ?',
         required: true,
-        options: ['Orientation session', 'Training materials', 'Mentor assignment', 'Team introductions', 'System setup']
+        options: ['Session d\'orientation', 'Matériel de formation', 'Attribution d\'un mentor', 'Présentations d\'équipe', 'Configuration du système']
       },
       {
         type: 'text',
-        title: 'What information was missing during onboarding?',
+        title: 'Quelles informations manquaient pendant l\'intégration ?',
         required: false
       },
       {
         type: 'rating',
-        title: 'How prepared do you feel to start your role?',
+        title: 'À quel point vous sentez-vous préparé pour commencer votre rôle ?',
         required: true
       }
     ]
   },
   {
     id: 'exit-interview',
-    name: 'Exit Interview Survey',
-    description: 'Understand reasons for employee departure',
+    name: 'Sondage d\'entretien de départ',
+    description: 'Comprendre les raisons du départ des employés',
     icon: Heart,
-    category: 'HR',
+    category: 'RH',
     questions: [
       {
         type: 'multiple_choice',
-        title: 'What is your primary reason for leaving?',
+        title: 'Quelle est votre principale raison de partir ?',
         required: true,
-        options: ['Better opportunity', 'Compensation', 'Work-life balance', 'Management issues', 'Career growth', 'Other']
+        options: ['Meilleure opportunité', 'Rémunération', 'Équilibre vie professionnelle-vie privée', 'Problèmes de management', 'Évolution de carrière', 'Autre']
       },
       {
         type: 'rating',
-        title: 'How likely are you to recommend this company as a place to work?',
+        title: 'Quelle est la probabilité que vous recommandiez cette entreprise comme lieu de travail ?',
         required: true
       },
       {
         type: 'text',
-        title: 'What could the company have done to retain you?',
+        title: 'Qu\'est-ce que l\'entreprise aurait pu faire pour vous retenir ?',
         required: false
       },
       {
         type: 'rating',
-        title: 'How would you rate your relationship with your direct manager?',
+        title: 'Comment évalueriez-vous votre relation avec votre manager direct ?',
         required: true
       }
     ]
   },
   {
     id: 'training-feedback',
-    name: 'Training Program Feedback',
-    description: 'Evaluate training effectiveness and quality',
+    name: 'Retour sur le programme de formation',
+    description: 'Évaluez l\'efficacité et la qualité de la formation',
     icon: Briefcase,
-    category: 'Training',
+    category: 'Formation',
     questions: [
       {
         type: 'rating',
-        title: 'How would you rate the overall quality of the training?',
+        title: 'Comment évalueriez-vous la qualité globale de la formation ?',
         required: true
       },
       {
         type: 'rating',
-        title: 'How relevant was the content to your job?',
+        title: 'À quel point le contenu était-il pertinent pour votre travail ?',
         required: true
       },
       {
         type: 'multiple_choice',
-        title: 'What was the most valuable part of the training?',
+        title: 'Quelle a été la partie la plus précieuse de la formation ?',
         required: true,
-        options: ['Content quality', 'Instructor expertise', 'Hands-on exercises', 'Group discussions', 'Materials provided']
+        options: ['Qualité du contenu', 'Expertise du formateur', 'Exercices pratiques', 'Discussions de groupe', 'Matériel fourni']
       },
       {
         type: 'text',
-        title: 'What topics would you like to see covered in future training?',
+        title: 'Quels sujets aimeriez-vous voir couverts dans les futures formations ?',
         required: false
       }
     ]
   },
   {
     id: 'customer-satisfaction',
-    name: 'Customer Satisfaction Survey',
-    description: 'Measure customer satisfaction and loyalty',
+    name: 'Sondage de satisfaction client',
+    description: 'Mesurez la satisfaction et la fidélité des clients',
     icon: FileText,
-    category: 'Customer',
+    category: 'Client',
     questions: [
       {
         type: 'rating',
-        title: 'How satisfied are you with our service?',
+        title: 'À quel point êtes-vous satisfait de notre service ?',
         required: true
       },
       {
         type: 'rating',
-        title: 'How likely are you to recommend us to others?',
+        title: 'Quelle est la probabilité que vous nous recommandiez à d\'autres ?',
         required: true
       },
       {
         type: 'multiple_choice',
-        title: 'What aspect of our service impressed you most?',
+        title: 'Quel aspect de notre service vous a le plus impressionné ?',
         required: true,
-        options: ['Quality', 'Speed', 'Customer support', 'Value for money', 'User experience']
+        options: ['Qualité', 'Rapidité', 'Support client', 'Rapport qualité-prix', 'Expérience utilisateur']
       },
       {
         type: 'text',
-        title: 'How can we improve our service?',
+        title: 'Comment pouvons-nous améliorer notre service ?',
         required: false
       }
     ]
@@ -221,8 +221,8 @@ const SurveyTemplates: React.FC<SurveyTemplatesProps> = ({ onSelectTemplate, onC
         <div className="p-6 border-b">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Choose a Survey Template</h2>
-              <p className="text-gray-600 mt-1">Start with a pre-built template and customize as needed</p>
+              <h2 className="text-2xl font-bold text-gray-900">Choisissez un modèle de sondage</h2>
+              <p className="text-gray-600 mt-1">Commencez avec un modèle pré-conçu et personnalisez selon vos besoins</p>
             </div>
             <button
               onClick={onClose}
@@ -236,7 +236,7 @@ const SurveyTemplates: React.FC<SurveyTemplatesProps> = ({ onSelectTemplate, onC
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
           {categories.map(category => (
             <div key={category} className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">{category} Templates</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Modèles {category}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {surveyTemplates
                   .filter(template => template.category === category)
@@ -258,7 +258,7 @@ const SurveyTemplates: React.FC<SurveyTemplatesProps> = ({ onSelectTemplate, onC
                             </h3>
                             <p className="text-sm text-gray-600 mt-1">{template.description}</p>
                             <p className="text-xs text-blue-600 mt-2">
-                              {template.questions.length} questions included
+                              {template.questions.length} questions incluses
                             </p>
                           </div>
                         </div>
@@ -276,7 +276,7 @@ const SurveyTemplates: React.FC<SurveyTemplatesProps> = ({ onSelectTemplate, onC
               onClick={onClose}
               className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              Annuler
             </button>
           </div>
         </div>

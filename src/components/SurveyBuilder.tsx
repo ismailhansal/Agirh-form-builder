@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Plus, GripVertical, Trash2, Eye, Save, Type, List, Star, CheckSquare, Calendar, Hash, ArrowLeft, FileText } from 'lucide-react';
@@ -29,7 +30,7 @@ interface SurveyBuilderProps {
 const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, onNavigate }) => {
   const [survey, setSurvey] = useState<Survey>({
     id: Date.now().toString(),
-    title: 'New Survey',
+    title: 'Nouveau sondage',
     description: '',
     questions: [],
     createdAt: new Date().toISOString(),
@@ -52,12 +53,12 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
   }, [editingSurveyId]);
 
   const questionTypes = [
-    { type: 'text', icon: Type, label: 'Text Input', description: 'Single line text' },
-    { type: 'multiple_choice', icon: List, label: 'Multiple Choice', description: 'Radio buttons' },
-    { type: 'rating', icon: Star, label: 'Rating Scale', description: '1-5 star rating' },
-    { type: 'checkbox', icon: CheckSquare, label: 'Checkboxes', description: 'Multiple selections' },
-    { type: 'date', icon: Calendar, label: 'Date', description: 'Date picker' },
-    { type: 'number', icon: Hash, label: 'Number', description: 'Numeric input' },
+    { type: 'text', icon: Type, label: 'Saisie de texte', description: 'Texte sur une ligne' },
+    { type: 'multiple_choice', icon: List, label: 'Choix multiple', description: 'Boutons radio' },
+    { type: 'rating', icon: Star, label: 'Échelle de notation', description: 'Notation 1-5 étoiles' },
+    { type: 'checkbox', icon: CheckSquare, label: 'Cases à cocher', description: 'Sélections multiples' },
+    { type: 'date', icon: Calendar, label: 'Date', description: 'Sélecteur de date' },
+    { type: 'number', icon: Hash, label: 'Nombre', description: 'Saisie numérique' },
   ];
 
   const handleSelectTemplate = (template: any) => {
@@ -80,7 +81,7 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
     const newQuestion: QuestionType = {
       id: Date.now().toString(),
       type: type as any,
-      title: `New ${type.replace('_', ' ')} Question`,
+      title: `Nouvelle question ${type.replace('_', ' ')}`,
       required: false,
       options: ['multiple_choice', 'checkbox'].includes(type) ? ['Option 1', 'Option 2'] : undefined
     };
@@ -122,7 +123,7 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
     const updatedSurveys = existingSurveys.filter((s: Survey) => s.id !== survey.id);
     updatedSurveys.push(survey);
     localStorage.setItem('hrSurveys', JSON.stringify(updatedSurveys));
-    alert('Survey saved successfully!');
+    alert('Sondage sauvegardé avec succès !');
   };
 
   const publishSurvey = () => {
@@ -133,7 +134,7 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
     const updatedSurveys = existingSurveys.filter((s: Survey) => s.id !== survey.id);
     updatedSurveys.push(updatedSurvey);
     localStorage.setItem('hrSurveys', JSON.stringify(updatedSurveys));
-    alert('Survey published successfully!');
+    alert('Sondage publié avec succès !');
   };
 
   const handleBackToSurveys = () => {
@@ -151,13 +152,13 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
             className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-800 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Surveys
+            Retour aux sondages
           </button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {editingSurveyId ? 'Edit Survey' : 'Survey Builder'}
+              {editingSurveyId ? 'Modifier le sondage' : 'Créateur de sondages'}
             </h1>
-            <p className="text-gray-600 mt-1">Create and customize your HR surveys</p>
+            <p className="text-gray-600 mt-1">Créez et personnalisez vos sondages RH</p>
           </div>
         </div>
         <div className="flex space-x-3">
@@ -166,27 +167,27 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
             className="flex items-center px-4 py-2 text-purple-700 bg-purple-100 border border-purple-300 rounded-lg hover:bg-purple-200 transition-colors"
           >
             <FileText className="w-4 h-4 mr-2" />
-            Use Template
+            Utiliser un modèle
           </button>
           <button
             onClick={() => setShowPreview(!showPreview)}
             className="flex items-center px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Eye className="w-4 h-4 mr-2" />
-            {showPreview ? 'Edit' : 'Preview'}
+            {showPreview ? 'Modifier' : 'Aperçu'}
           </button>
           <button
             onClick={saveSurvey}
             className="flex items-center px-4 py-2 text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 transition-colors"
           >
             <Save className="w-4 h-4 mr-2" />
-            Save Draft
+            Sauvegarder brouillon
           </button>
           <button
             onClick={publishSurvey}
             className="flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Publish Survey
+            Publier le sondage
           </button>
         </div>
       </div>
@@ -198,7 +199,7 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
           {/* Question Types Palette */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-4">
-              <h3 className="font-semibold text-gray-900 mb-4">Question Types</h3>
+              <h3 className="font-semibold text-gray-900 mb-4">Types de questions</h3>
               <div className="space-y-2">
                 {questionTypes.map((type) => {
                   const Icon = type.icon;
@@ -230,13 +231,13 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
                   value={survey.title}
                   onChange={(e) => setSurvey(prev => ({ ...prev, title: e.target.value }))}
                   className="text-2xl font-bold text-gray-900 border-none outline-none w-full bg-transparent"
-                  placeholder="Survey Title"
+                  placeholder="Titre du sondage"
                 />
                 <textarea
                   value={survey.description}
                   onChange={(e) => setSurvey(prev => ({ ...prev, description: e.target.value }))}
                   className="mt-2 text-gray-600 border-none outline-none w-full bg-transparent resize-none"
-                  placeholder="Survey description (optional)"
+                  placeholder="Description du sondage (optionnel)"
                   rows={2}
                 />
               </div>
@@ -282,16 +283,16 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
                 {survey.questions.length === 0 && (
                   <div className="text-center py-12 text-gray-500">
                     <Plus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                    <p className="mb-2">No questions yet. Get started by:</p>
+                    <p className="mb-2">Aucune question pour le moment. Commencez par :</p>
                     <div className="space-y-2">
                       <button
                         onClick={() => setShowTemplates(true)}
                         className="block mx-auto text-purple-600 hover:text-purple-700 font-medium"
                       >
-                        Using a template
+                        Utiliser un modèle
                       </button>
-                      <p className="text-gray-400">or</p>
-                      <p>Adding questions from the panel on the left</p>
+                      <p className="text-gray-400">ou</p>
+                      <p>Ajouter des questions depuis le panneau de gauche</p>
                     </div>
                   </div>
                 )}
@@ -333,6 +334,18 @@ const QuestionEditor: React.FC<{
     onUpdate({ options: newOptions });
   };
 
+  const getQuestionTypeLabel = (type: string) => {
+    switch (type) {
+      case 'text': return 'Question texte';
+      case 'multiple_choice': return 'Question choix multiple';
+      case 'rating': return 'Question notation';
+      case 'checkbox': return 'Question cases à cocher';
+      case 'date': return 'Question date';
+      case 'number': return 'Question nombre';
+      default: return 'Question';
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -341,7 +354,7 @@ const QuestionEditor: React.FC<{
           value={question.title}
           onChange={(e) => onUpdate({ title: e.target.value })}
           className="text-lg font-medium text-gray-900 border-none outline-none bg-transparent flex-1"
-          placeholder="Question title"
+          placeholder="Titre de la question"
         />
         <button
           onClick={onDelete}
@@ -370,7 +383,7 @@ const QuestionEditor: React.FC<{
                 onClick={() => removeOption(index)}
                 className="text-red-500 hover:text-red-700 text-sm"
               >
-                Remove
+                Supprimer
               </button>
             </div>
           ))}
@@ -378,7 +391,7 @@ const QuestionEditor: React.FC<{
             onClick={addOption}
             className="text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
-            + Add Option
+            + Ajouter une option
           </button>
         </div>
       )}
@@ -391,10 +404,10 @@ const QuestionEditor: React.FC<{
             onChange={(e) => onUpdate({ required: e.target.checked })}
             className="mr-2 text-blue-600"
           />
-          <span className="text-sm text-gray-600">Required</span>
+          <span className="text-sm text-gray-600">Obligatoire</span>
         </label>
-        <span className="text-xs text-gray-400 capitalize">
-          {question.type.replace('_', ' ')} Question
+        <span className="text-xs text-gray-400">
+          {getQuestionTypeLabel(question.type)}
         </span>
       </div>
     </div>
@@ -429,7 +442,7 @@ const SurveyPreview: React.FC<{ survey: Survey }> = ({ survey }) => {
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                placeholder="Your answer"
+                placeholder="Votre réponse"
                 onChange={(e) => handleResponseChange(question.id, e.target.value)}
               />
             )}
@@ -438,7 +451,7 @@ const SurveyPreview: React.FC<{ survey: Survey }> = ({ survey }) => {
               <input
                 type="number"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                placeholder="Your answer"
+                placeholder="Votre réponse"
                 onChange={(e) => handleResponseChange(question.id, e.target.value)}
               />
             )}
@@ -513,7 +526,7 @@ const SurveyPreview: React.FC<{ survey: Survey }> = ({ survey }) => {
 
         <div className="pt-6">
           <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            Submit Survey
+            Envoyer le sondage
           </button>
         </div>
       </div>

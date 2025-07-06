@@ -60,6 +60,15 @@ const Index = () => {
     return userLevel >= requiredLevel;
   };
 
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case 'admin': return 'Administrateur';
+      case 'hr_manager': return 'Responsable RH';
+      case 'employee': return 'Employé';
+      default: return role;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -68,15 +77,15 @@ const Index = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <h1 className="text-2xl font-bold text-blue-600">HR Survey Platform</h1>
+                <h1 className="text-2xl font-bold text-blue-600">Plateforme de Sondages RH</h1>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-700">
-                Welcome, <span className="font-medium">{user.name}</span>
+                Bienvenue, <span className="font-medium">{user.name}</span>
               </span>
-              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full capitalize">
-                {user.role.replace('_', ' ')}
+              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                {getRoleLabel(user.role)}
               </span>
               <button
                 onClick={handleLogout}
@@ -104,7 +113,7 @@ const Index = () => {
                   }`}
                 >
                   <BarChart3 className="w-5 h-5 mr-3" />
-                  Dashboard
+                  Tableau de bord
                 </button>
               </li>
               <li>
@@ -117,7 +126,7 @@ const Index = () => {
                   }`}
                 >
                   <FileText className="w-5 h-5 mr-3" />
-                  Surveys
+                  Sondages
                 </button>
               </li>
               {hasPermission('hr_manager') && (
@@ -131,7 +140,7 @@ const Index = () => {
                     }`}
                   >
                     <Settings className="w-5 h-5 mr-3" />
-                    Survey Builder
+                    Créateur de sondages
                   </button>
                 </li>
               )}
@@ -146,7 +155,7 @@ const Index = () => {
                     }`}
                   >
                     <Users className="w-5 h-5 mr-3" />
-                    User Management
+                    Gestion des utilisateurs
                   </button>
                 </li>
               )}
@@ -163,9 +172,9 @@ const Index = () => {
           )}
           {currentView === 'users' && hasPermission('admin') && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">User Management</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Gestion des utilisateurs</h2>
               <div className="bg-white rounded-lg shadow p-6">
-                <p className="text-gray-600">User management functionality would be implemented here.</p>
+                <p className="text-gray-600">La fonctionnalité de gestion des utilisateurs sera implémentée ici.</p>
               </div>
             </div>
           )}

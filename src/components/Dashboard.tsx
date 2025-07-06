@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Users, FileText, TrendingUp, Clock, Eye, Download } from 'lucide-react';
@@ -48,39 +47,48 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
     });
   }, []);
 
-  // Sample data for charts
+  // Sample data for charts - translated
   const surveyData = [
-    { name: 'Employee Satisfaction', responses: 45, completion: 78 },
-    { name: 'Performance Review', responses: 32, completion: 65 },
-    { name: 'Training Feedback', responses: 28, completion: 85 },
-    { name: 'Exit Interview', responses: 12, completion: 92 }
+    { name: 'Satisfaction employés', responses: 45, completion: 78 },
+    { name: 'Évaluation performance', responses: 32, completion: 65 },
+    { name: 'Retour formation', responses: 28, completion: 85 },
+    { name: 'Entretien de départ', responses: 12, completion: 92 }
   ];
 
   const statusData = [
-    { name: 'Published', value: stats.activeSurveys, color: '#10B981' },
-    { name: 'Draft', value: stats.totalSurveys - stats.activeSurveys, color: '#F59E0B' }
+    { name: 'Publié', value: stats.activeSurveys, color: '#10B981' },
+    { name: 'Brouillon', value: stats.totalSurveys - stats.activeSurveys, color: '#F59E0B' }
   ];
 
   const responseData = [
     { month: 'Jan', responses: 65 },
-    { month: 'Feb', responses: 78 },
+    { month: 'Fév', responses: 78 },
     { month: 'Mar', responses: 82 },
-    { month: 'Apr', responses: 95 },
-    { month: 'May', responses: 87 },
-    { month: 'Jun', responses: 102 }
+    { month: 'Avr', responses: 95 },
+    { month: 'Mai', responses: 87 },
+    { month: 'Juin', responses: 102 }
   ];
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'published': return 'publié';
+      case 'draft': return 'brouillon';
+      case 'closed': return 'fermé';
+      default: return status;
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">Welcome back, {user.name}</p>
+          <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
+          <p className="text-gray-600 mt-1">Bon retour, {user.name}</p>
         </div>
         <div className="flex space-x-3">
           <button className="flex items-center px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
             <Download className="w-4 h-4 mr-2" />
-            Export Report
+            Exporter le rapport
           </button>
         </div>
       </div>
@@ -90,7 +98,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Surveys</p>
+              <p className="text-sm text-gray-600">Total sondages</p>
               <p className="text-2xl font-bold text-gray-900">{stats.totalSurveys}</p>
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
@@ -102,7 +110,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Active Surveys</p>
+              <p className="text-sm text-gray-600">Sondages actifs</p>
               <p className="text-2xl font-bold text-gray-900">{stats.activeSurveys}</p>
             </div>
             <div className="bg-green-100 p-3 rounded-lg">
@@ -114,7 +122,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Responses</p>
+              <p className="text-sm text-gray-600">Total réponses</p>
               <p className="text-2xl font-bold text-gray-900">{stats.totalResponses}</p>
             </div>
             <div className="bg-purple-100 p-3 rounded-lg">
@@ -126,7 +134,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Avg Response Rate</p>
+              <p className="text-sm text-gray-600">Taux de réponse moy.</p>
               <p className="text-2xl font-bold text-gray-900">{stats.avgResponseRate}%</p>
             </div>
             <div className="bg-orange-100 p-3 rounded-lg">
@@ -140,7 +148,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Survey Responses Chart */}
         <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Survey Responses</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Réponses aux sondages</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={surveyData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -154,7 +162,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
 
         {/* Survey Status Distribution */}
         <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Survey Status</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Statut des sondages</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -186,7 +194,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
 
       {/* Response Trend */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Response Trend</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Tendance des réponses</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={responseData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -201,9 +209,9 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
       {/* Recent Surveys */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Recent Surveys</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Sondages récents</h3>
           <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-            View All
+            Voir tout
           </button>
         </div>
         <div className="space-y-4">
@@ -212,7 +220,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
               <div>
                 <h4 className="font-medium text-gray-900">{survey.title}</h4>
                 <p className="text-sm text-gray-600">
-                  Created {new Date(survey.createdAt).toLocaleDateString()}
+                  Créé le {new Date(survey.createdAt).toLocaleDateString('fr-FR')}
                 </p>
               </div>
               <div className="flex items-center space-x-2">
@@ -223,7 +231,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
                     ? 'bg-yellow-100 text-yellow-800'
                     : 'bg-gray-100 text-gray-800'
                 }`}>
-                  {survey.status}
+                  {getStatusText(survey.status)}
                 </span>
                 <button className="text-gray-400 hover:text-gray-600">
                   <Eye className="w-4 h-4" />

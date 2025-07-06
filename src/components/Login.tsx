@@ -24,9 +24,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   // Demo accounts
   const demoAccounts = [
-    { email: 'admin@company.com', password: 'admin123', name: 'Admin User', role: 'admin' as const },
-    { email: 'hr@company.com', password: 'hr123', name: 'HR Manager', role: 'hr_manager' as const },
-    { email: 'employee@company.com', password: 'emp123', name: 'Employee', role: 'employee' as const }
+    { email: 'admin@company.com', password: 'admin123', name: 'Administrateur', role: 'admin' as const },
+    { email: 'hr@company.com', password: 'hr123', name: 'Responsable RH', role: 'hr_manager' as const },
+    { email: 'employee@company.com', password: 'emp123', name: 'Employé', role: 'employee' as const }
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -44,12 +44,12 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           email: account.email
         });
       } else {
-        setError('Invalid email or password');
+        setError('Email ou mot de passe invalide');
       }
     } else {
       // Registration logic
       if (!name || !email || !password) {
-        setError('Please fill in all fields');
+        setError('Veuillez remplir tous les champs');
         return;
       }
       
@@ -79,9 +79,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">HR Survey Platform</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Plateforme de Sondages RH</h1>
             <p className="text-gray-600 mt-2">
-              {isLogin ? 'Sign in to your account' : 'Create your account'}
+              {isLogin ? 'Connectez-vous à votre compte' : 'Créez votre compte'}
             </p>
           </div>
 
@@ -94,7 +94,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
                 <div className="relative">
                   <User className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
                   <input
@@ -102,7 +102,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your full name"
+                    placeholder="Entrez votre nom complet"
                     required={!isLogin}
                   />
                 </div>
@@ -118,14 +118,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your email"
+                  placeholder="Entrez votre email"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
               <div className="relative">
                 <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
                 <input
@@ -133,7 +133,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your password"
+                  placeholder="Entrez votre mot de passe"
                   required
                 />
                 <button
@@ -148,15 +148,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Rôle</label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as any)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="employee">Employee</option>
-                  <option value="hr_manager">HR Manager</option>
-                  <option value="admin">Admin</option>
+                  <option value="employee">Employé</option>
+                  <option value="hr_manager">Responsable RH</option>
+                  <option value="admin">Administrateur</option>
                 </select>
               </div>
             )}
@@ -165,7 +165,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               type="submit"
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
-              {isLogin ? 'Sign In' : 'Create Account'}
+              {isLogin ? 'Se connecter' : 'Créer le compte'}
             </button>
           </form>
 
@@ -174,13 +174,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               onClick={() => setIsLogin(!isLogin)}
               className="text-blue-600 hover:text-blue-700 text-sm font-medium"
             >
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+              {isLogin ? "Vous n'avez pas de compte ? Inscrivez-vous" : "Vous avez déjà un compte ? Connectez-vous"}
             </button>
           </div>
 
           {/* Demo Accounts */}
           <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600 text-center mb-4">Quick Demo Access:</p>
+            <p className="text-sm text-gray-600 text-center mb-4">Accès rapide démo :</p>
             <div className="space-y-2">
               {demoAccounts.map((account, index) => (
                 <button
