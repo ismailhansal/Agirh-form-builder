@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-ddnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Plus, GripVertical, Trash2, Eye, Save, Type, List, Star, CheckSquare, Calendar, Hash, ArrowLeft } from 'lucide-react';
 
 interface QuestionType {
@@ -89,7 +89,7 @@ const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, on
     }));
   };
 
-  const handleDragEnd = (result: any) => {
+  const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
     const items = Array.from(survey.questions);
