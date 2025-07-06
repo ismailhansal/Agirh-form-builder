@@ -1,7 +1,6 @@
-
-import React, { useState, useRef } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Plus, GripVertical, Trash2, Eye, Save, Type, List, Star, CheckSquare, Calendar, Hash } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-ddnd';
+import { Plus, GripVertical, Trash2, Eye, Save, Type, List, Star, CheckSquare, Calendar, Hash, ArrowLeft } from 'lucide-react';
 
 interface QuestionType {
   id: string;
@@ -20,7 +19,13 @@ interface Survey {
   status: 'draft' | 'published' | 'closed';
 }
 
-const SurveyBuilder: React.FC<{ user: any }> = ({ user }) => {
+interface SurveyBuilderProps {
+  user: any;
+  editingSurveyId?: string;
+  onNavigate?: (view: string) => void;
+}
+
+const SurveyBuilder: React.FC<SurveyBuilderProps> = ({ user, editingSurveyId, onNavigate }) => {
   const [survey, setSurvey] = useState<Survey>({
     id: Date.now().toString(),
     title: 'New Survey',
@@ -32,6 +37,17 @@ const SurveyBuilder: React.FC<{ user: any }> = ({ user }) => {
 
   const [showPreview, setShowPreview] = useState(false);
   const dragCounter = useRef(0);
+
+  // Load existing survey if editing
+  useEffect(() => {
+    if (editingSurveyId) {
+      const storedSurveys = JSON.parse(localStorage.getItem('hrSurveys') || '[]');
+      const existingSurvey = storedSurveys.find((s: Survey) => s.id === editingSurveyId);
+      if (existingSurvey) {
+        setSurvey(existingSurvey);
+      }
+    }
+  }, [editingSurveyId]);
 
   const questionTypes = [
     { type: 'text', icon: Type, label: 'Text Input', description: 'Single line text' },
@@ -102,12 +118,29 @@ const SurveyBuilder: React.FC<{ user: any }> = ({ user }) => {
     alert('Survey published successfully!');
   };
 
+  const handleBackToSurveys = () => {
+    if (onNavigate) {
+      onNavigate('surveys');
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Survey Builder</h1>
-          <p className="text-gray-600 mt-1">Create and customize your HR surveys</p>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={handleBackToSurveys}
+            className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Surveys
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {editingSurveyId ? 'Edit Survey' : 'Survey Builder'}
+            </h1>
+            <p className="text-gray-600 mt-1">Create and customize your HR surveys</p>
+          </div>
         </div>
         <div className="flex space-x-3">
           <button

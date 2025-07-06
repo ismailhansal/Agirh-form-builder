@@ -19,7 +19,12 @@ interface Survey {
   responses?: number;
 }
 
-const SurveyList: React.FC<{ user: User }> = ({ user }) => {
+interface SurveyListProps {
+  user: User;
+  onNavigate?: (view: string, surveyId?: string) => void;
+}
+
+const SurveyList: React.FC<SurveyListProps> = ({ user, onNavigate }) => {
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [filteredSurveys, setFilteredSurveys] = useState<Survey[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -79,6 +84,18 @@ const SurveyList: React.FC<{ user: User }> = ({ user }) => {
     localStorage.setItem('hrSurveys', JSON.stringify(updatedSurveys));
   };
 
+  const handleCreateSurvey = () => {
+    if (onNavigate) {
+      onNavigate('builder');
+    }
+  };
+
+  const handleEditSurvey = (surveyId: string) => {
+    if (onNavigate) {
+      onNavigate('builder', surveyId);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'published': return 'bg-green-100 text-green-800';
@@ -103,7 +120,7 @@ const SurveyList: React.FC<{ user: User }> = ({ user }) => {
         </div>
         {hasPermission('create') && (
           <button
-            onClick={() => window.location.href = '#builder'}
+            onClick={handleCreateSurvey}
             className="flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -178,7 +195,10 @@ const SurveyList: React.FC<{ user: User }> = ({ user }) => {
                     <Eye className="w-4 h-4" />
                   </button>
                   {hasPermission('edit') && (
-                    <button className="p-2 text-gray-400 hover:text-green-600 transition-colors">
+                    <button 
+                      onClick={() => handleEditSurvey(survey.id)}
+                      className="p-2 text-gray-400 hover:text-green-600 transition-colors"
+                    >
                       <Edit className="w-4 h-4" />
                     </button>
                   )}
@@ -238,7 +258,7 @@ const SurveyList: React.FC<{ user: User }> = ({ user }) => {
           </p>
           {hasPermission('create') && !searchTerm && statusFilter === 'all' && (
             <button
-              onClick={() => window.location.href = '#builder'}
+              onClick={handleCreateSurvey}
               className="inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />

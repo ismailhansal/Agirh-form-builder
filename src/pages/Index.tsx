@@ -18,6 +18,7 @@ interface User {
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState('dashboard');
+  const [editingSurveyId, setEditingSurveyId] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,6 +38,15 @@ const Index = () => {
     setUser(null);
     localStorage.removeItem('hrSurveyUser');
     setCurrentView('dashboard');
+  };
+
+  const handleNavigate = (view: string, surveyId?: string) => {
+    setCurrentView(view);
+    if (view === 'builder') {
+      setEditingSurveyId(surveyId);
+    } else {
+      setEditingSurveyId(undefined);
+    }
   };
 
   if (!user) {
@@ -86,7 +96,7 @@ const Index = () => {
             <ul className="space-y-2">
               <li>
                 <button
-                  onClick={() => setCurrentView('dashboard')}
+                  onClick={() => handleNavigate('dashboard')}
                   className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                     currentView === 'dashboard'
                       ? 'bg-blue-100 text-blue-700'
@@ -99,7 +109,7 @@ const Index = () => {
               </li>
               <li>
                 <button
-                  onClick={() => setCurrentView('surveys')}
+                  onClick={() => handleNavigate('surveys')}
                   className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                     currentView === 'surveys'
                       ? 'bg-blue-100 text-blue-700'
@@ -113,7 +123,7 @@ const Index = () => {
               {hasPermission('hr_manager') && (
                 <li>
                   <button
-                    onClick={() => setCurrentView('builder')}
+                    onClick={() => handleNavigate('builder')}
                     className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                       currentView === 'builder'
                         ? 'bg-blue-100 text-blue-700'
@@ -128,7 +138,7 @@ const Index = () => {
               {hasPermission('admin') && (
                 <li>
                   <button
-                    onClick={() => setCurrentView('users')}
+                    onClick={() => handleNavigate('users')}
                     className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                       currentView === 'users'
                         ? 'bg-blue-100 text-blue-700'
@@ -147,8 +157,10 @@ const Index = () => {
         {/* Main Content */}
         <main className="flex-1 p-6">
           {currentView === 'dashboard' && <Dashboard user={user} />}
-          {currentView === 'surveys' && <SurveyList user={user} />}
-          {currentView === 'builder' && hasPermission('hr_manager') && <SurveyBuilder user={user} />}
+          {currentView === 'surveys' && <SurveyList user={user} onNavigate={handleNavigate} />}
+          {currentView === 'builder' && hasPermission('hr_manager') && (
+            <SurveyBuilder user={user} editingSurveyId={editingSurveyId} onNavigate={handleNavigate} />
+          )}
           {currentView === 'users' && hasPermission('admin') && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">User Management</h2>
