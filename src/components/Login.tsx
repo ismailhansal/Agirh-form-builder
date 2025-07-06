@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Eye, EyeOff, Users } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 
 interface User {
   id: string;
@@ -14,137 +14,185 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [role, setRole] = useState<'admin' | 'hr_manager' | 'employee'>('employee');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<'admin' | 'hr_manager' | 'employee'>('employee');
+  const [error, setError] = useState('');
 
-  // Mock users for demo
-  const mockUsers = {
-    admin: { id: '1', name: 'John Admin', role: 'admin' as const, email: 'admin@company.com' },
-    hr_manager: { id: '2', name: 'Sarah HR', role: 'hr_manager' as const, email: 'hr@company.com' },
-    employee: { id: '3', name: 'Mike Employee', role: 'employee' as const, email: 'employee@company.com' }
-  };
+  // Demo accounts
+  const demoAccounts = [
+    { email: 'admin@company.com', password: 'admin123', name: 'Admin User', role: 'admin' as const },
+    { email: 'hr@company.com', password: 'hr123', name: 'HR Manager', role: 'hr_manager' as const },
+    { email: 'employee@company.com', password: 'emp123', name: 'Employee', role: 'employee' as const }
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const user = mockUsers[selectedRole];
-    onLogin(user);
+    setError('');
+
+    if (isLogin) {
+      // Login logic
+      const account = demoAccounts.find(acc => acc.email === email && acc.password === password);
+      if (account) {
+        onLogin({
+          id: Date.now().toString(),
+          name: account.name,
+          role: account.role,
+          email: account.email
+        });
+      } else {
+        setError('Invalid email or password');
+      }
+    } else {
+      // Registration logic
+      if (!name || !email || !password) {
+        setError('Please fill in all fields');
+        return;
+      }
+      
+      onLogin({
+        id: Date.now().toString(),
+        name,
+        role,
+        email
+      });
+    }
   };
 
-  const quickLogin = (role: 'admin' | 'hr_manager' | 'employee') => {
-    const user = mockUsers[role];
-    onLogin(user);
+  const handleDemoLogin = (account: typeof demoAccounts[0]) => {
+    onLogin({
+      id: Date.now().toString(),
+      name: account.name,
+      role: account.role,
+      email: account.email
+    });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-blue-600 rounded-full flex items-center justify-center mb-4">
-            <Users className="h-6 w-6 text-white" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900">HR Survey Platform</h2>
-          <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
-        </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <div className="relative mt-1">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your password"
-              />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <Eye className="h-5 w-5 text-gray-400" />
-                )}
-              </button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="text-center mb-8">
+            <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <User className="w-8 h-8 text-white" />
             </div>
+            <h1 className="text-2xl font-bold text-gray-900">HR Survey Platform</h1>
+            <p className="text-gray-600 mt-2">
+              {isLogin ? 'Sign in to your account' : 'Create your account'}
+            </p>
           </div>
 
-          <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-              Role (Demo)
-            </label>
-            <select
-              id="role"
-              value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value as 'admin' | 'hr_manager' | 'employee')}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="employee">Employee</option>
-              <option value="hr_manager">HR Manager</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-          >
-            Sign in
-          </button>
-        </form>
-
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Demo Quick Login</span>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                <div className="relative">
+                  <User className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter your full name"
+                    required={!isLogin}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <div className="relative">
+                <Mail className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <div className="relative">
+                <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value as any)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="employee">Employee</option>
+                  <option value="hr_manager">HR Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              {isLogin ? 'Sign In' : 'Create Account'}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+            </button>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-3">
-            <button
-              onClick={() => quickLogin('admin')}
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
-            >
-              Login as Admin
-            </button>
-            <button
-              onClick={() => quickLogin('hr_manager')}
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
-            >
-              Login as HR Manager
-            </button>
-            <button
-              onClick={() => quickLogin('employee')}
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
-            >
-              Login as Employee
-            </button>
+          {/* Demo Accounts */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <p className="text-sm text-gray-600 text-center mb-4">Quick Demo Access:</p>
+            <div className="space-y-2">
+              {demoAccounts.map((account, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleDemoLogin(account)}
+                  className="w-full text-left px-4 py-2 text-sm bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <div className="font-medium">{account.name}</div>
+                  <div className="text-gray-600">{account.email}</div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

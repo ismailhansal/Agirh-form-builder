@@ -1,340 +1,237 @@
 
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Area, AreaChart } from 'recharts';
-import { TrendingUp, Users, FileText, Activity, Calendar, Award, AlertCircle, CheckCircle } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { Users, FileText, TrendingUp, Clock, Eye, Download } from 'lucide-react';
 
-interface DashboardProps {
-  user: any;
+interface User {
+  id: string;
+  name: string;
+  role: 'admin' | 'hr_manager' | 'employee';
+  email: string;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ user }) => {
-  const [surveys, setSurveys] = useState<any[]>([]);
-  const [responses, setResponses] = useState<any[]>([]);
+interface Survey {
+  id: string;
+  title: string;
+  description: string;
+  questions: any[];
+  createdAt: string;
+  status: 'draft' | 'published' | 'closed';
+  responses?: number;
+}
+
+const Dashboard: React.FC<{ user: User }> = ({ user }) => {
+  const [surveys, setSurveys] = useState<Survey[]>([]);
+  const [stats, setStats] = useState({
+    totalSurveys: 0,
+    activeSurveys: 0,
+    totalResponses: 0,
+    avgResponseRate: 0
+  });
 
   useEffect(() => {
-    // Load mock data
-    const mockSurveys = JSON.parse(localStorage.getItem('hrSurveys') || '[]');
-    const mockResponses = JSON.parse(localStorage.getItem('hrSurveyResponses') || '[]');
-    
-    // Add some sample data if none exists
-    if (mockSurveys.length === 0) {
-      const sampleSurveys = [
-        {
-          id: '1',
-          title: 'Employee Satisfaction Survey',
-          description: 'Annual employee satisfaction and engagement survey',
-          status: 'published',
-          createdAt: '2024-01-15',
-          responseCount: 45,
-          questions: []
-        },
-        {
-          id: '2',
-          title: 'Remote Work Assessment',
-          description: 'Assessing the effectiveness of remote work policies',
-          status: 'published',
-          createdAt: '2024-02-01',
-          responseCount: 32,
-          questions: []
-        },
-        {
-          id: '3',
-          title: 'Training Needs Analysis',
-          description: 'Identifying training and development needs',
-          status: 'draft',
-          createdAt: '2024-02-10',
-          responseCount: 0,
-          questions: []
-        }
-      ];
-      localStorage.setItem('hrSurveys', JSON.stringify(sampleSurveys));
-      setSurveys(sampleSurveys);
-    } else {
-      setSurveys(mockSurveys);
-    }
+    // Load surveys from localStorage
+    const storedSurveys = JSON.parse(localStorage.getItem('hrSurveys') || '[]');
+    setSurveys(storedSurveys);
 
-    // Generate sample response data
-    const sampleResponses = generateSampleResponses();
-    setResponses(sampleResponses);
+    // Calculate stats
+    const totalSurveys = storedSurveys.length;
+    const activeSurveys = storedSurveys.filter((s: Survey) => s.status === 'published').length;
+    const totalResponses = storedSurveys.reduce((sum: number, s: Survey) => sum + (s.responses || 0), 0);
+    const avgResponseRate = totalSurveys > 0 ? Math.round((totalResponses / totalSurveys) * 100) / 100 : 0;
+
+    setStats({
+      totalSurveys,
+      activeSurveys,
+      totalResponses,
+      avgResponseRate
+    });
   }, []);
 
-  const generateSampleResponses = () => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const responseData = months.map(month => ({
-      month,
-      responses: Math.floor(Math.random() * 50) + 20,
-      satisfaction: Math.floor(Math.random() * 2) + 4, // 4-5 rating
-      engagement: Math.floor(Math.random() * 30) + 70, // 70-100%
-    }));
-
-    return responseData;
-  };
-
-  const satisfactionData = [
-    { name: 'Very Satisfied', value: 35, color: '#10B981' },
-    { name: 'Satisfied', value: 28, color: '#3B82F6' },
-    { name: 'Neutral', value: 20, color: '#F59E0B' },
-    { name: 'Dissatisfied', value: 12, color: '#EF4444' },
-    { name: 'Very Dissatisfied', value: 5, color: '#DC2626' },
+  // Sample data for charts
+  const surveyData = [
+    { name: 'Employee Satisfaction', responses: 45, completion: 78 },
+    { name: 'Performance Review', responses: 32, completion: 65 },
+    { name: 'Training Feedback', responses: 28, completion: 85 },
+    { name: 'Exit Interview', responses: 12, completion: 92 }
   ];
 
-  const departmentData = [
-    { department: 'Engineering', responses: 25, satisfaction: 4.2 },
-    { department: 'Marketing', responses: 18, satisfaction: 4.0 },
-    { department: 'Sales', responses: 22, satisfaction: 3.8 },
-    { department: 'HR', responses: 12, satisfaction: 4.5 },
-    { department: 'Finance', responses: 15, satisfaction: 4.1 },
+  const statusData = [
+    { name: 'Published', value: stats.activeSurveys, color: '#10B981' },
+    { name: 'Draft', value: stats.totalSurveys - stats.activeSurveys, color: '#F59E0B' }
   ];
 
-  const totalSurveys = surveys.length;
-  const activeSurveys = surveys.filter(s => s.status === 'published').length;
-  const totalResponses = surveys.reduce((sum, s) => sum + (s.responseCount || 0), 0);
-  const averageSatisfaction = 4.1;
+  const responseData = [
+    { month: 'Jan', responses: 65 },
+    { month: 'Feb', responses: 78 },
+    { month: 'Mar', responses: 82 },
+    { month: 'Apr', responses: 95 },
+    { month: 'May', responses: 87 },
+    { month: 'Jun', responses: 102 }
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Overview of your HR survey analytics and insights</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600 mt-1">Welcome back, {user.name}</p>
+        </div>
+        <div className="flex space-x-3">
+          <button className="flex items-center px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <Download className="w-4 h-4 mr-2" />
+            Export Report
+          </button>
+        </div>
       </div>
 
-      {/* Key Metrics */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard
-          title="Total Surveys"
-          value={totalSurveys.toString()}
-          icon={FileText}
-          color="blue"
-          change="+12%"
-          changeType="positive"
-        />
-        <MetricCard
-          title="Active Surveys"
-          value={activeSurveys.toString()}
-          icon={Activity}
-          color="green"
-          change="+8%"
-          changeType="positive"
-        />
-        <MetricCard
-          title="Total Responses"
-          value={totalResponses.toString()}
-          icon={Users}
-          color="purple"
-          change="+23%"
-          changeType="positive"
-        />
-        <MetricCard
-          title="Avg. Satisfaction"
-          value={averageSatisfaction.toFixed(1)}
-          icon={Award}
-          color="yellow"
-          change="+0.3"
-          changeType="positive"
-        />
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Total Surveys</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalSurveys}</p>
+            </div>
+            <div className="bg-blue-100 p-3 rounded-lg">
+              <FileText className="w-6 h-6 text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Active Surveys</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.activeSurveys}</p>
+            </div>
+            <div className="bg-green-100 p-3 rounded-lg">
+              <TrendingUp className="w-6 h-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Total Responses</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalResponses}</p>
+            </div>
+            <div className="bg-purple-100 p-3 rounded-lg">
+              <Users className="w-6 h-6 text-purple-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Avg Response Rate</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.avgResponseRate}%</p>
+            </div>
+            <div className="bg-orange-100 p-3 rounded-lg">
+              <Clock className="w-6 h-6 text-orange-600" />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Charts Grid */}
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Response Trends */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Response Trends</h3>
+        {/* Survey Responses Chart */}
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Survey Responses</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={responses}>
+            <BarChart data={surveyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
+              <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Area 
-                type="monotone" 
-                dataKey="responses" 
-                stroke="#3B82F6" 
-                fill="#3B82F6" 
-                fillOpacity={0.1}
-              />
-            </AreaChart>
+              <Bar dataKey="responses" fill="#3B82F6" />
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Satisfaction Distribution */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Satisfaction Distribution</h3>
+        {/* Survey Status Distribution */}
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Survey Status</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={satisfactionData}
+                data={statusData}
                 cx="50%"
                 cy="50%"
-                outerRadius={100}
-                fill="#8884d8"
+                innerRadius={60}
+                outerRadius={120}
+                paddingAngle={5}
                 dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
               >
-                {satisfactionData.map((entry, index) => (
+                {statusData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
-        </div>
-
-        {/* Department Analysis */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Department Response Rates</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={departmentData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="department" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="responses" fill="#10B981" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Engagement Over Time */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Employee Engagement Trends</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={responses}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="engagement" 
-                stroke="#8B5CF6" 
-                strokeWidth={3}
-                dot={{ fill: '#8B5CF6' }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Recent Activity & Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Surveys */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Surveys</h3>
-          <div className="space-y-4">
-            {surveys.slice(0, 5).map((survey) => (
-              <div key={survey.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">{survey.title}</h4>
-                  <p className="text-sm text-gray-600">{survey.responseCount || 0} responses</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    survey.status === 'published' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {survey.status}
-                  </span>
-                  {survey.status === 'published' ? (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4 text-yellow-500" />
-                  )}
-                </div>
+          <div className="flex justify-center space-x-4 mt-4">
+            {statusData.map((entry, index) => (
+              <div key={index} className="flex items-center">
+                <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: entry.color }}></div>
+                <span className="text-sm text-gray-600">{entry.name}</span>
               </div>
             ))}
           </div>
         </div>
-
-        {/* Key Insights */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Insights</h3>
-          <div className="space-y-4">
-            <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-              <div className="flex">
-                <TrendingUp className="w-5 h-5 text-blue-500 mt-0.5" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-blue-800">Response Rate Increasing</p>
-                  <p className="text-sm text-blue-600">Survey response rates have increased by 23% this month</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
-              <div className="flex">
-                <Award className="w-5 h-5 text-green-500 mt-0.5" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-green-800">High Satisfaction Scores</p>
-                  <p className="text-sm text-green-600">HR department shows highest satisfaction ratings at 4.5/5</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
-              <div className="flex">
-                <AlertCircle className="w-5 h-5 text-yellow-500 mt-0.5" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-yellow-800">Attention Needed</p>
-                  <p className="text-sm text-yellow-600">Sales department has lower engagement scores - follow up recommended</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
-              <div className="flex">
-                <Calendar className="w-5 h-5 text-purple-500 mt-0.5" />
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-purple-800">Quarterly Review Due</p>
-                  <p className="text-sm text-purple-600">Q1 employee satisfaction survey is scheduled for next week</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-  );
-};
 
-interface MetricCardProps {
-  title: string;
-  value: string;
-  icon: React.ElementType;
-  color: 'blue' | 'green' | 'purple' | 'yellow';
-  change: string;
-  changeType: 'positive' | 'negative' | 'neutral';
-}
-
-const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon: Icon, color, change, changeType }) => {
-  const colorClasses = {
-    blue: 'bg-blue-500',
-    green: 'bg-green-500',
-    purple: 'bg-purple-500',
-    yellow: 'bg-yellow-500',
-  };
-
-  const changeClasses = {
-    positive: 'text-green-600 bg-green-100',
-    negative: 'text-red-600 bg-red-100',
-    neutral: 'text-gray-600 bg-gray-100',
-  };
-
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
-        </div>
-        <div className={`p-3 rounded-full ${colorClasses[color]}`}>
-          <Icon className="w-6 h-6 text-white" />
-        </div>
+      {/* Response Trend */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Response Trend</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={responseData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="responses" stroke="#10B981" strokeWidth={2} />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
-      <div className="mt-4">
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${changeClasses[changeType]}`}>
-          {change}
-        </span>
-        <span className="text-sm text-gray-500 ml-2">from last month</span>
+
+      {/* Recent Surveys */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Recent Surveys</h3>
+          <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            View All
+          </button>
+        </div>
+        <div className="space-y-4">
+          {surveys.slice(0, 5).map((survey) => (
+            <div key={survey.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <h4 className="font-medium text-gray-900">{survey.title}</h4>
+                <p className="text-sm text-gray-600">
+                  Created {new Date(survey.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className={`px-2 py-1 text-xs rounded-full ${
+                  survey.status === 'published' 
+                    ? 'bg-green-100 text-green-800' 
+                    : survey.status === 'draft'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {survey.status}
+                </span>
+                <button className="text-gray-400 hover:text-gray-600">
+                  <Eye className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
