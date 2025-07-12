@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import SurveyBuilder from '../components/SurveyBuilder';
+import FormBuilder from '../components/FormBuilder';
 import Dashboard from '../components/Dashboard';
 import SurveyList from '../components/SurveyList';
+import FormList from '../components/FormList';
 import Login from '../components/Login';
-import { Users, BarChart3, FileText, Settings, LogOut } from 'lucide-react';
+import { Users, BarChart3, FileText, Settings, LogOut, FormInput } from 'lucide-react';
 
 // Mock user context
 interface User {
@@ -19,6 +21,7 @@ const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState('dashboard');
   const [editingSurveyId, setEditingSurveyId] = useState<string | undefined>(undefined);
+  const [editingFormId, setEditingFormId] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,12 +43,17 @@ const Index = () => {
     setCurrentView('dashboard');
   };
 
-  const handleNavigate = (view: string, surveyId?: string) => {
+  const handleNavigate = (view: string, itemId?: string) => {
     setCurrentView(view);
     if (view === 'builder') {
-      setEditingSurveyId(surveyId);
+      setEditingSurveyId(itemId);
+      setEditingFormId(undefined);
+    } else if (view === 'form-builder') {
+      setEditingFormId(itemId);
+      setEditingSurveyId(undefined);
     } else {
       setEditingSurveyId(undefined);
+      setEditingFormId(undefined);
     }
   };
 
@@ -129,20 +137,48 @@ const Index = () => {
                   Sondages
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => handleNavigate('forms')}
+                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    currentView === 'forms'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <FormInput className="w-5 h-5 mr-3" />
+                  Formulaires
+                </button>
+              </li>
               {hasPermission('hr_manager') && (
-                <li>
-                  <button
-                    onClick={() => handleNavigate('builder')}
-                    className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      currentView === 'builder'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <Settings className="w-5 h-5 mr-3" />
-                    Créateur de sondages
-                  </button>
-                </li>
+                <>
+                  <li>
+                    <button
+                      onClick={() => handleNavigate('builder')}
+                      className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        currentView === 'builder'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <Settings className="w-5 h-5 mr-3" />
+                      Créateur de sondages
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => handleNavigate('form-builder')}
+                      className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        currentView === 'form-builder'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <FormInput className="w-5 h-5 mr-3" />
+                      Créateur de formulaires
+                    </button>
+                  </li>
+                </>
               )}
               {hasPermission('admin') && (
                 <li>
@@ -167,8 +203,12 @@ const Index = () => {
         <main className="flex-1 p-6">
           {currentView === 'dashboard' && <Dashboard user={user} />}
           {currentView === 'surveys' && <SurveyList user={user} onNavigate={handleNavigate} />}
+          {currentView === 'forms' && <FormList user={user} onNavigate={handleNavigate} />}
           {currentView === 'builder' && hasPermission('hr_manager') && (
             <SurveyBuilder user={user} editingSurveyId={editingSurveyId} onNavigate={handleNavigate} />
+          )}
+          {currentView === 'form-builder' && hasPermission('hr_manager') && (
+            <FormBuilder user={user} editingFormId={editingFormId} onNavigate={handleNavigate} />
           )}
           {currentView === 'users' && hasPermission('admin') && (
             <div>
