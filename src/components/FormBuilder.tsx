@@ -1,7 +1,7 @@
-
 import React, { useState, useRef } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Plus, GripVertical, Trash2, Eye, Save, Type, List, CheckSquare, Calendar, Hash, ArrowLeft, Settings, Columns, Layout } from 'lucide-react';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 interface Contrainte {
   clePrimaire: boolean;
@@ -71,8 +71,8 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ user, editingFormId, onNaviga
   });
 
   const [activeOnglet, setActiveOnglet] = useState(0);
-  const [showPreview, setShowPreview] = useState(false);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const champTypes = [
     { type: 'texte', icon: Type, label: 'Texte', description: 'Saisie de texte' },
@@ -224,9 +224,17 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ user, editingFormId, onNaviga
     }
   };
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
+    <div className="h-screen flex flex-col max-w-full">
+      <div className="flex justify-between items-center mb-6 px-6 pt-6">
         <div className="flex items-center space-x-4">
           <button
             onClick={handleBackToForms}
@@ -250,13 +258,6 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ user, editingFormId, onNaviga
             Générer JSON
           </button>
           <button
-            onClick={() => setShowPreview(!showPreview)}
-            className="flex items-center px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            {showPreview ? 'Modifier' : 'Aperçu'}
-          </button>
-          <button
             onClick={saveFormulaire}
             className="flex items-center px-4 py-2 text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 transition-colors"
           >
@@ -266,13 +267,11 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ user, editingFormId, onNaviga
         </div>
       </div>
 
-      {showPreview ? (
-        <FormPreview formulaire={formulaire} />
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="flex-1 px-6 pb-6">
+        <ResizablePanelGroup direction="horizontal" className="h-full">
           {/* Palette des types de champs */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border p-4 sticky top-4">
+          <ResizablePanel defaultSize={20} minSize={15} maxSize={25}>
+            <div className="bg-white rounded-lg shadow-sm border p-4 h-full">
               <h3 className="font-semibold text-gray-900 mb-4">Types de champs</h3>
               <div className="space-y-2">
                 {champTypes.map((type) => {
@@ -283,7 +282,9 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ user, editingFormId, onNaviga
                       draggable
                       onDragStart={(e) => {
                         e.dataTransfer.setData('champType', type.type);
+                        handleDragStart();
                       }}
+                      onDragEnd={handleDragEnd}
                       className="flex items-center p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group cursor-grab active:cursor-grabbing"
                     >
                       <Icon className="w-5 h-5 text-gray-600 mr-3 group-hover:text-blue-600" />
@@ -296,11 +297,13 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ user, editingFormId, onNaviga
                 })}
               </div>
             </div>
-          </div>
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
 
           {/* Constructeur de formulaire */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border">
+          <ResizablePanel defaultSize={40} minSize={30}>
+            <div className="bg-white rounded-lg shadow-sm border h-full flex flex-col">
               {/* En-tête du formulaire */}
               <div className="p-6 border-b">
                 <input
@@ -356,7 +359,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ user, editingFormId, onNaviga
               </div>
 
               {/* Contenu de l'onglet actif */}
-              <div className="p-6">
+              <div className="p-6 flex-1 overflow-auto">
                 <OngletEditor
                   onglet={formulaire.onglets[activeOnglet]}
                   onAddGroupe={() => addGroupe(activeOnglet, 0)}
@@ -364,12 +367,34 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ user, editingFormId, onNaviga
                   onUpdateChamp={updateChamp}
                   onUpdateGroupe={updateGroupe}
                   onShowAdvancedOptions={setShowAdvancedOptions}
+                  isDragging={isDragging}
                 />
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          {/* Aperçu en temps réel */}
+          <ResizablePanel defaultSize={40} minSize={30}>
+            <div className="bg-gray-50 rounded-lg border h-full">
+              <div className="p-4 border-b bg-white rounded-t-lg">
+                <div className="flex items-center space-x-2">
+                  <Eye className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-semibold text-gray-900">Aperçu en temps réel</h3>
+                </div>
+              </div>
+              <div className="p-4 h-full overflow-auto">
+                <LiveFormPreview 
+                  formulaire={formulaire} 
+                  activeOnglet={activeOnglet}
+                  isDragging={isDragging}
+                />
+              </div>
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
 
       {/* Modal pour les options avancées */}
       {showAdvancedOptions && (
@@ -392,7 +417,8 @@ const OngletEditor: React.FC<{
   onUpdateChamp: (champId: string, updates: Partial<Champ>) => void;
   onUpdateGroupe: (groupeId: string, updates: Partial<Groupe>) => void;
   onShowAdvancedOptions: (champId: string) => void;
-}> = ({ onglet, onAddGroupe, onAddChamp, onUpdateChamp, onUpdateGroupe, onShowAdvancedOptions }) => {
+  isDragging: boolean;
+}> = ({ onglet, onAddGroupe, onAddChamp, onUpdateChamp, onUpdateGroupe, onShowAdvancedOptions, isDragging }) => {
   
   const handleDrop = (e: React.DragEvent, groupeId: string) => {
     e.preventDefault();
@@ -444,6 +470,7 @@ const OngletEditor: React.FC<{
             onShowAdvancedOptions={onShowAdvancedOptions}
             onDrop={(e) => handleDrop(e, groupe.id)}
             onDragOver={handleDragOver}
+            isDragging={isDragging}
           />
         ))}
       </div>
@@ -459,10 +486,11 @@ const GroupeEditor: React.FC<{
   onShowAdvancedOptions: (champId: string) => void;
   onDrop: (e: React.DragEvent) => void;
   onDragOver: (e: React.DragEvent) => void;
-}> = ({ groupe, onUpdateGroupe, onUpdateChamp, onShowAdvancedOptions, onDrop, onDragOver }) => {
+  isDragging: boolean;
+}> = ({ groupe, onUpdateGroupe, onUpdateChamp, onShowAdvancedOptions, onDrop, onDragOver, isDragging }) => {
   
   return (
-    <div className="border rounded-lg p-4 bg-gray-50">
+    <div className={`border rounded-lg p-4 bg-gray-50 transition-all ${isDragging ? 'ring-2 ring-blue-300' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <input
           type="text"
@@ -485,7 +513,9 @@ const GroupeEditor: React.FC<{
       <div
         onDrop={onDrop}
         onDragOver={onDragOver}
-        className="min-h-24 border-2 border-dashed border-gray-300 rounded-lg p-4 space-y-3"
+        className={`min-h-24 border-2 border-dashed rounded-lg p-4 space-y-3 transition-colors ${
+          isDragging ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
+        }`}
       >
         {groupe.champs.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
@@ -576,7 +606,6 @@ const ChampEditor: React.FC<{
   );
 };
 
-// Modal pour les options avancées
 const AdvancedOptionsModal: React.FC<{
   champId: string;
   formulaire: Formulaire;
@@ -696,17 +725,22 @@ const AdvancedOptionsModal: React.FC<{
   );
 };
 
-// Composant d'aperçu du formulaire
-const FormPreview: React.FC<{ formulaire: Formulaire }> = ({ formulaire }) => {
-  const [activeOnglet, setActiveOnglet] = useState(0);
+// Nouveau composant d'aperçu en temps réel
+const LiveFormPreview: React.FC<{ 
+  formulaire: Formulaire; 
+  activeOnglet: number;
+  isDragging: boolean;
+}> = ({ formulaire, activeOnglet, isDragging }) => {
   const [responses, setResponses] = useState<Record<string, any>>({});
 
   const handleResponseChange = (champId: string, value: any) => {
     setResponses(prev => ({ ...prev, [champId]: value }));
   };
 
+  const currentOnglet = formulaire.onglets[activeOnglet];
+
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border">
+    <div className={`bg-white rounded-lg shadow-sm border transition-all ${isDragging ? 'ring-2 ring-blue-300' : ''}`}>
       <div className="p-6 border-b">
         <h1 className="text-2xl font-bold text-gray-900">{formulaire.nom}</h1>
         {formulaire.description && (
@@ -718,25 +752,88 @@ const FormPreview: React.FC<{ formulaire: Formulaire }> = ({ formulaire }) => {
       <div className="border-b">
         <div className="flex overflow-x-auto">
           {formulaire.onglets.map((onglet, index) => (
-            <button
+            <div
               key={onglet.id}
-              onClick={() => setActiveOnglet(index)}
-              className={`px-6 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+              className={`px-6 py-3 text-sm font-medium whitespace-nowrap border-b-2 ${
                 activeOnglet === index
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-gray-500'
               }`}
             >
               {onglet.titre}
-            </button>
+            </div>
           ))}
         </div>
       </div>
 
       <div className="p-6">
-        <div className="space-y-6">
-          {formulaire.onglets[activeOnglet].colonnes[0].groupes.map((groupe) => (
-            <div key={groupe.id} className="border rounded-lg p-4">
+        {currentOnglet.colonnes[0].groupes.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">
+            <Layout className="w-12 h-12 mx-auto mb-4" />
+            <p>Ajoutez des groupes pour voir l'aperçu</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <GroupesPreview 
+              groupes={currentOnglet.colonnes[0].groupes} 
+              onResponseChange={handleResponseChange}
+              responses={responses}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Composant pour l'aperçu des groupes avec gestion de la largeur
+const GroupesPreview: React.FC<{
+  groupes: Groupe[];
+  onResponseChange: (champId: string, value: any) => void;
+  responses: Record<string, any>;
+}> = ({ groupes, onResponseChange, responses }) => {
+  
+  // Organiser les groupes par rangées selon leur largeur
+  const organiseGroupes = () => {
+    const rows: Groupe[][] = [];
+    let currentRow: Groupe[] = [];
+    let currentRowWidth = 0;
+
+    groupes.forEach(groupe => {
+      const groupeWidth = groupe.largeur === 'pleine' ? 100 : 50;
+      
+      if (currentRowWidth + groupeWidth > 100) {
+        if (currentRow.length > 0) {
+          rows.push(currentRow);
+        }
+        currentRow = [groupe];
+        currentRowWidth = groupeWidth;
+      } else {
+        currentRow.push(groupe);
+        currentRowWidth += groupeWidth;
+      }
+    });
+
+    if (currentRow.length > 0) {
+      rows.push(currentRow);
+    }
+
+    return rows;
+  };
+
+  const rows = organiseGroupes();
+
+  return (
+    <div className="space-y-4">
+      {rows.map((row, rowIndex) => (
+        <div key={rowIndex} className="flex gap-4">
+          {row.map(groupe => (
+            <div 
+              key={groupe.id} 
+              className={`border rounded-lg p-4 ${
+                groupe.largeur === 'pleine' ? 'flex-1' : 'flex-1 max-w-[calc(50%-0.5rem)]'
+              }`}
+            >
               <h3 className="text-lg font-medium text-gray-900 mb-4">{groupe.titre}</h3>
               <div className="space-y-4">
                 {groupe.champs.filter(c => c.contraintes.visible).map((champ) => (
@@ -751,7 +848,8 @@ const FormPreview: React.FC<{ formulaire: Formulaire }> = ({ formulaire }) => {
                         type="text"
                         placeholder={champ.placeholder}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        onChange={(e) => handleResponseChange(champ.id, e.target.value)}
+                        onChange={(e) => onResponseChange(champ.id, e.target.value)}
+                        value={responses[champ.id] || ''}
                       />
                     )}
 
@@ -760,7 +858,8 @@ const FormPreview: React.FC<{ formulaire: Formulaire }> = ({ formulaire }) => {
                         type="number"
                         placeholder={champ.placeholder}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        onChange={(e) => handleResponseChange(champ.id, e.target.value)}
+                        onChange={(e) => onResponseChange(champ.id, e.target.value)}
+                        value={responses[champ.id] || ''}
                       />
                     )}
 
@@ -768,7 +867,8 @@ const FormPreview: React.FC<{ formulaire: Formulaire }> = ({ formulaire }) => {
                       <input
                         type="date"
                         className="border border-gray-300 rounded-lg px-3 py-2"
-                        onChange={(e) => handleResponseChange(champ.id, e.target.value)}
+                        onChange={(e) => onResponseChange(champ.id, e.target.value)}
+                        value={responses[champ.id] || ''}
                       />
                     )}
 
@@ -777,7 +877,8 @@ const FormPreview: React.FC<{ formulaire: Formulaire }> = ({ formulaire }) => {
                         <input
                           type="checkbox"
                           className="mr-3"
-                          onChange={(e) => handleResponseChange(champ.id, e.target.checked)}
+                          onChange={(e) => onResponseChange(champ.id, e.target.checked)}
+                          checked={responses[champ.id] || false}
                         />
                         <span className="text-sm">{champ.placeholder || 'Cocher si applicable'}</span>
                       </label>
@@ -788,7 +889,8 @@ const FormPreview: React.FC<{ formulaire: Formulaire }> = ({ formulaire }) => {
                         type="email"
                         placeholder={champ.placeholder}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        onChange={(e) => handleResponseChange(champ.id, e.target.value)}
+                        onChange={(e) => onResponseChange(champ.id, e.target.value)}
+                        value={responses[champ.id] || ''}
                       />
                     )}
 
@@ -797,14 +899,16 @@ const FormPreview: React.FC<{ formulaire: Formulaire }> = ({ formulaire }) => {
                         type="tel"
                         placeholder={champ.placeholder}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        onChange={(e) => handleResponseChange(champ.id, e.target.value)}
+                        onChange={(e) => onResponseChange(champ.id, e.target.value)}
+                        value={responses[champ.id] || ''}
                       />
                     )}
 
                     {champ.type === 'selection' && champ.options && (
                       <select
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        onChange={(e) => handleResponseChange(champ.id, e.target.value)}
+                        onChange={(e) => onResponseChange(champ.id, e.target.value)}
+                        value={responses[champ.id] || ''}
                       >
                         <option value="">Sélectionner...</option>
                         {champ.options.map((option, index) => (
@@ -818,13 +922,7 @@ const FormPreview: React.FC<{ formulaire: Formulaire }> = ({ formulaire }) => {
             </div>
           ))}
         </div>
-
-        <div className="pt-6">
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            Envoyer le formulaire
-          </button>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };
