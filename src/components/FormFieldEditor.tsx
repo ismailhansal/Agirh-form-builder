@@ -18,8 +18,9 @@ const FormFieldEditor: React.FC<FormFieldEditorProps> = ({
   isDragging 
 }) => {
   return (
-    <div className={`bg-white border rounded-lg p-3 space-y-3 transition-all ${isDragging ? 'opacity-50' : ''}`}>
-      <div className="flex items-center justify-between">
+    <div className={`bg-white border rounded-lg p-4 space-y-4 transition-all ${isDragging ? 'opacity-50' : ''}`}>
+      {/* Header with drag handle, field name edit, and controls */}
+      <div className="flex items-center justify-between border-b pb-2">
         <div className="flex items-center flex-1">
           <GripVertical className="w-4 h-4 text-gray-400 mr-2 cursor-grab" />
           <input
@@ -49,7 +50,109 @@ const FormFieldEditor: React.FC<FormFieldEditorProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      {/* WYSIWYG Field Preview - Same layout as FormPreview */}
+      <div className="flex items-center space-x-3">
+        <label className="text-sm font-medium text-gray-700 min-w-0 w-32 flex-shrink-0">
+          {champ.label || 'Label du champ'}
+          {champ.obligatoire && <span className="text-red-500 ml-1">*</span>}
+        </label>
+        
+        <div className="flex-1">
+          {champ.type === 'texte' && (
+            <input
+              type="text"
+              placeholder={champ.placeholder}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              style={{ width: champ.configuration?.fieldWidth || '100%' }}
+              disabled
+            />
+          )}
+
+          {champ.type === 'nombre' && (
+            <input
+              type="number"
+              placeholder={champ.placeholder}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              style={{ width: champ.configuration?.fieldWidth || '100%' }}
+              disabled
+            />
+          )}
+
+          {champ.type === 'date' && (
+            <input
+              type="date"
+              className="border border-gray-300 rounded-lg px-3 py-2"
+              style={{ width: champ.configuration?.fieldWidth || 'auto' }}
+              disabled
+            />
+          )}
+
+          {champ.type === 'booleen' && (
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                className="mr-3"
+                disabled
+              />
+              <span className="text-sm">{champ.placeholder || 'Cocher si applicable'}</span>
+            </label>
+          )}
+
+          {champ.type === 'email' && (
+            <input
+              type="email"
+              placeholder={champ.placeholder}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              style={{ width: champ.configuration?.fieldWidth || '100%' }}
+              disabled
+            />
+          )}
+
+          {champ.type === 'telephone' && (
+            <input
+              type="tel"
+              placeholder={champ.placeholder}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              style={{ width: champ.configuration?.fieldWidth || '100%' }}
+              disabled
+            />
+          )}
+
+          {champ.type === 'selection' && champ.options && (
+            <select
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
+              style={{ width: champ.configuration?.fieldWidth || '100%' }}
+              disabled
+            >
+              <option value="">Sélectionner...</option>
+              {champ.options.map((option, index) => (
+                <option key={index} value={option}>{option}</option>
+              ))}
+            </select>
+          )}
+
+          {champ.type === 'radio' && champ.options && (
+            <div className="flex flex-wrap gap-4">
+              {champ.options.map((option, index) => (
+                <label key={index} className="flex items-center">
+                  <input
+                    type="radio"
+                    name={`preview-${champ.id}`}
+                    value={option}
+                    className="mr-2"
+                    disabled
+                  />
+                  <span className="text-sm">{option}</span>
+                </label>
+              ))}
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* Configuration controls */}
+      <div className="grid grid-cols-2 gap-3 pt-2 border-t">
         <input
           type="text"
           value={champ.placeholder || ''}
