@@ -7,7 +7,7 @@ import Dashboard from '../components/Dashboard';
 import SurveyList from '../components/SurveyList';
 import FormList from '../components/FormList';
 import Login from '../components/Login';
-import { Users, BarChart3, FileText, Settings, LogOut, FormInput } from 'lucide-react';
+import { Users, BarChart3, FileText, Settings, LogOut, FormInput, Menu, X } from 'lucide-react';
 
 // Mock user context
 interface User {
@@ -22,6 +22,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState('dashboard');
   const [editingSurveyId, setEditingSurveyId] = useState<string | undefined>(undefined);
   const [editingFormId, setEditingFormId] = useState<string | undefined>(undefined);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,7 +84,14 @@ const Index = () => {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setSidebarVisible(!sidebarVisible)}
+                className="text-gray-500 hover:text-gray-700 p-2 rounded-lg transition-colors"
+                title={sidebarVisible ? 'Masquer le menu' : 'Afficher le menu'}
+              >
+                {sidebarVisible ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
               <div className="flex-shrink-0">
                 <h1 className="text-2xl font-bold text-blue-600">AGIRH</h1>
               </div>
@@ -108,7 +116,8 @@ const Index = () => {
 
       <div className="flex">
         {/* Sidebar */}
-        <nav className="w-64 bg-white shadow-sm min-h-screen">
+        {sidebarVisible && (
+          <nav className="w-64 bg-white shadow-sm min-h-screen transition-all duration-300">
           <div className="p-4">
             <ul className="space-y-2">
               <li>
@@ -198,9 +207,10 @@ const Index = () => {
             </ul>
           </div>
         </nav>
+        )}
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className={`flex-1 p-6 transition-all duration-300 ${!sidebarVisible ? 'ml-0' : ''}`}>
           {currentView === 'dashboard' && <Dashboard user={user} />}
           {currentView === 'surveys' && <SurveyList user={user} onNavigate={handleNavigate} />}
           {currentView === 'forms' && <FormList user={user} onNavigate={handleNavigate} />}
